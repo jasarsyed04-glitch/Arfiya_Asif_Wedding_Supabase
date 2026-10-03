@@ -1,12 +1,141 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RSVP</title><link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="assets/css/responsive.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body class="paper-bg"><main class="screen rsvp-screen"><p class="eyebrow">WE WOULD LOVE TO HAVE YOU</p><h1 class="script big">Join Us</h1><p class="subtle max">Your presence is our blessing. Please confirm your presence and celebrate this beautiful day with us.</p><form id="rsvpForm"><input id="guestName" name="name" required placeholder="Your name" autocomplete="name"><select id="attendance" name="attendance" required><option value="">Will you attend?</option><option value="yes">Yes, with pleasure</option><option value="no">Sorry, I can't attend</option></select><button class="primary" type="submit">Send RSVP</button></form><p id="rsvpThanks" class="success hidden-message" role="status" aria-live="polite"></p><nav class="pager"><a href="venue.html">←</a><a href="thanks.html">→</a></nav></main><script src="assets/js/app.js"></script></body></html>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<script>
-const SUPABASE_URL = 'https://grsaqbjudrsxhmymhtlj.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_-eqoOqTSa1ma4Wup0sx7uw_4bTVmBmr';
+  <title>RSVP</title>
 
-const supabase = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
-</script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0"></script>
+</head>
+
+<body class="paper-bg">
+
+  <main class="screen rsvp-screen">
+
+    <p class="eyebrow">WE WOULD LOVE TO HAVE YOU</p>
+
+    <h1 class="script big">Join Us</h1>
+
+    <p class="subtle max">
+      Your presence is our blessing. Please confirm your presence
+      and celebrate this beautiful day with us.
+    </p>
+
+    <form id="rsvpForm">
+
+      <input
+        id="guestName"
+        name="name"
+        required
+        placeholder="Your name"
+        autocomplete="name"
+      >
+
+      <select
+        id="attendance"
+        name="attendance"
+        required
+      >
+        <option value="">Will you attend?</option>
+        <option value="yes">Yes, with pleasure</option>
+        <option value="no">Sorry, I can't attend</option>
+      </select>
+
+      <button class="primary" type="submit">
+        Send RSVP
+      </button>
+
+    </form>
+
+    <p
+      id="rsvpThanks"
+      class="success hidden-message"
+      role="status"
+      aria-live="polite"
+    ></p>
+
+    <nav class="pager">
+      <a href="venue.html">←</a>
+      <a href="thanks.html">→</a>
+    </nav>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://grsaqbjudrsxhmymhtlj.supabase.co';
+
+    const SUPABASE_ANON_KEY =
+      'sb_publishable_-eqoOqTSa1ma4Wup0sx7uw_4bTVmBmr';
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    const rsvpForm = document.getElementById('rsvpForm');
+    const rsvpThanks = document.getElementById('rsvpThanks');
+
+    rsvpForm.addEventListener('submit', async function (event) {
+
+      event.preventDefault();
+
+      const name = document.getElementById('guestName').value.trim();
+      const attendance = document.getElementById('attendance').value;
+
+      if (!name || !attendance) {
+        return;
+      }
+
+      const submitButton = rsvpForm.querySelector('button');
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending...';
+
+      const { error } = await supabaseClient
+        .from('rsvps')
+        .insert([
+          {
+            name: name,
+            attendance: attendance
+          }
+        ]);
+
+      if (error) {
+
+        console.error('RSVP error:', error);
+
+        rsvpThanks.textContent =
+          'Sorry, your RSVP could not be saved. Please try again.';
+
+        rsvpThanks.classList.remove('hidden-message');
+
+        submitButton.disabled = false;
+        submitButton.textContent = 'Send RSVP';
+
+        return;
+      }
+
+      rsvpThanks.textContent =
+        'Thank you! Your RSVP has been received.';
+
+      rsvpThanks.classList.remove('hidden-message');
+
+      rsvpForm.reset();
+
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send RSVP';
+
+    });
+  </script>
+
+  <script src="assets/js/app.js"></script>
+
+</body>
+</html>
+```
